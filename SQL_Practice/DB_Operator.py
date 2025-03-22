@@ -44,3 +44,39 @@ class MSSQLOperator:
         else:
 
             print(f'База данных {database_name} успешно создана')
+
+    def create_table(self, database_name, sql_query, table_name):
+        self.conn_cursor.execute(f'USE {database_name}')
+        SQLQuery = sql_query(table_name)
+        try:
+            self.conn_cursor.execute(SQLQuery)
+        except pyodbc.ProgrammingError as exPE:
+            print(exPE)
+
+            return False
+        except pyodbc.OperationalError as exOE:
+            print(exOE)
+
+            return False
+        else:
+            print(f'Таблица {table_name} успешно создана!')
+
+            return True
+
+if __name__ == '__main__':
+    load_dotenv()
+
+    DRIVER = os.getenv('MS_SQL_DRIVER')
+    SERVER = os.getenv('MS_SQL_SERVER')
+    WORK_DATABASE = os.getenv('MS_SQL_DATABASE')
+    PAD_DATABASE = os.getenv('MS_PAD_DATABASE')
+    USER = os.getenv('MS_SQL_USER')
+    PASSWORD = os.getenv('MS_SQL_KEY')
+
+    my_conn = ConnectDB.connect_to_db(driver=DRIVER, server=SERVER, pad_database=PAD_DATABASE, user=USER,
+                                      password=PASSWORD)
+    my_db_operator = MSSQLOperator(my_conn)
+    my_db_operator.create_database(WORK_DATABASE)
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_customers_data,'customers_data')
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_employees_data,'employees_data')
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_orders_data,'orders_data')
