@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 import SQL_Queries
 
+"""Класс соединения с базой данных"""
+
 
 class ConnectDB:
     @classmethod
@@ -26,12 +28,17 @@ class ConnectDB:
     def close_connection(cls, conn_obj):
         conn_obj.close()
 
+
+"""Оператор для работы с базой данных SQL"""
+
+
 class MSSQLOperator:
 
     def __init__(self, conn_obj):
         self.conn = conn_obj
         self.conn_cursor = self.conn.cursor()
 
+    """Создание базы данных через sql команды"""
 
     def create_database(self, database_name):
         SQLCommand = SQL_Queries.create_database(database_name)
@@ -44,6 +51,8 @@ class MSSQLOperator:
         else:
 
             print(f'База данных {database_name} успешно создана')
+
+    """Создание таблицы через sql команды"""
 
     def create_table(self, database_name, sql_query, table_name):
         self.conn_cursor.execute(f'USE {database_name}')
@@ -63,6 +72,7 @@ class MSSQLOperator:
 
             return True
 
+
 if __name__ == '__main__':
     load_dotenv()
 
@@ -77,6 +87,6 @@ if __name__ == '__main__':
                                       password=PASSWORD)
     my_db_operator = MSSQLOperator(my_conn)
     my_db_operator.create_database(WORK_DATABASE)
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_customers_data,'customers_data')
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_employees_data,'employees_data')
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_orders_data,'orders_data')
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_customers_data, 'customers_data')
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_employees_data, 'employees_data')
+    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_orders_data, 'orders_data')

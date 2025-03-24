@@ -1,6 +1,12 @@
+"""Запрос на создание базы данных"""
+
+
 def create_database(name):
     QUERY = fr'CREATE DATABASE {name};'
     return QUERY
+
+
+"""Запрос на создание таблицы customers_data"""
 
 
 def create_customers_data(table_name):
@@ -9,6 +15,9 @@ def create_customers_data(table_name):
                  company_name nvarchar(100),
                  contact_name nvarchar(50));"""
     return QUERY
+
+
+"""Запрос на создание таблицы employees_data"""
 
 
 def create_employees_data(table_name):
@@ -20,6 +29,9 @@ def create_employees_data(table_name):
                 birth_data date, 
                 notes nvarchar(1000));"""
     return QUERY
+
+
+"""Запрос на создание таблицы orders_data"""
 
 
 def create_orders_data(table_name):
