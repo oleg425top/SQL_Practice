@@ -8,8 +8,6 @@ class CSVAdapter:
         data_from_csv = []
         with open(filename, 'r', encoding='utf-8') as file:
             reader = csv.reader(file)
-            # print(reader.__dir__())
-            # print(reader.line_num)
             for row in reader:
                 data_from_csv.append(row)
 
@@ -26,4 +24,7 @@ class CSVAdapter:
 if __name__ == '__main__':
     adapter = CSVAdapter()
     data_from_csv = adapter.get_csv_file(r'CSV_data/customers_data.csv')
+    # [print((' '.join(data))) for data in data_from_csv]
+    # [print(data) for data in data_from_csv]
+    print(data_from_csv)
     adapter.write_csv_in_file(r'CSV_data/data_from_csv.scv', data_from_csv)

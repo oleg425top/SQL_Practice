@@ -1,9 +1,12 @@
+import csv
 import os
+from fileinput import filename
 
 import pyodbc
 from dotenv import load_dotenv
 
 import SQL_Queries
+from SQL_Practice.CSV_Adapter import CSVAdapter
 
 """Класс соединения с базой данных"""
 
@@ -36,7 +39,7 @@ class MSSQLOperator:
 
     def __init__(self, conn_obj):
         self.conn = conn_obj
-        self.conn_cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor()
 
     """Создание базы данных через sql команды"""
 
@@ -55,10 +58,10 @@ class MSSQLOperator:
     """Создание таблицы через sql команды"""
 
     def create_table(self, database_name, sql_query, table_name):
-        self.conn_cursor.execute(f'USE {database_name}')
+        self.cursor.execute(f'USE {database_name}')
         SQLQuery = sql_query(table_name)
         try:
-            self.conn_cursor.execute(SQLQuery)
+            self.cursor.execute(SQLQuery)
         except pyodbc.ProgrammingError as exPE:
             print(exPE)
 
@@ -71,6 +74,20 @@ class MSSQLOperator:
             print(f'Таблица {table_name} успешно создана!')
 
             return True
+
+    def fill_table(self, database_name, table_name,filename, sql_query):
+        self.cursor.execute(f'USE {database_name}')
+        data_to_fill_list = CSVAdapter.get_csv_file(filename)
+        print(data_to_fill_list)
+        for data_to_fill in data_to_fill_list:
+            try:
+                self.cursor.execute(sql_query(table_name, data_to_fill))
+            except pyodbc.Error as ex:
+                print(ex)
+                print(data_to_fill)
+                continue
+            else:
+                print('Данные в таблице')
 
 
 if __name__ == '__main__':
@@ -86,7 +103,10 @@ if __name__ == '__main__':
     my_conn = ConnectDB.connect_to_db(driver=DRIVER, server=SERVER, pad_database=PAD_DATABASE, user=USER,
                                       password=PASSWORD)
     my_db_operator = MSSQLOperator(my_conn)
-    my_db_operator.create_database(WORK_DATABASE)
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_customers_data, 'customers_data')
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_employees_data, 'employees_data')
-    my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_orders_data, 'orders_data')
+    # my_db_operator.create_database(WORK_DATABASE)
+    # my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_customers_data, 'customers_data')
+    # my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_employees_data, 'employees_data')
+    # my_db_operator.create_table(WORK_DATABASE, SQL_Queries.create_orders_data, 'orders_data')
+    # my_db_operator.fill_table(WORK_DATABASE, 'customers_data', r'CSV_data/customers_data.csv',SQL_Queries.fill_table_customers)
+    # my_db_operator.fill_table(WORK_DATABASE, 'employees_data', r'CSV_data/employees_data.csv',SQL_Queries.fill_table_employees_data)
+    my_db_operator.fill_table(WORK_DATABASE, 'orders_data', r'CSV_data/orders_data.csv',SQL_Queries.fill_orders_data)
